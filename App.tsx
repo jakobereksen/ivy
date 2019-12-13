@@ -13,9 +13,10 @@ import React from 'react';
 import OnboardingScreen from './src/components/screens/OnboardingScreen';
 import WriteScreen from './src/components/screens/WriteScreen';
 import PrioritizeScreen from './src/components/screens/PrioritizeScreen';
+import DoScreen from './src/components/screens/DoScreen';
 
 const App = () => {
-  return <PrioritizeScreen />;
+  return <DoScreen />;
 };
 
 export default App;
