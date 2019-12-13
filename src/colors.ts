@@ -4,4 +4,5 @@ export default {
   background: 'white',
   inactiveLight: '#EEEEEE',
   inactiveDark: '#D8D8D8',
+  textDark: 'black',
 };

@@ -8,7 +8,9 @@
   },
   "dependencies": {
     "react": "16.8.6",
-    "react-native": "0.60.5"
+    "react-native": "0.60.5",
+    "react-native-circular-progress": "^1.3.4",
+    "react-native-svg": "^9.13.6"
   },
   "devDependencies": {
     "@babel/core": "^7.5.0",

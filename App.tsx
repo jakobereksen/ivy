@@ -11,9 +11,10 @@
 import React from 'react';
 
 import OnboardingScreen from './src/components/screens/OnboardingScreen';
+import WriteScreen from './src/components/screens/WriteScreen';
 
 const App = () => {
-  return <OnboardingScreen />;
+  return <WriteScreen />;
 };
 
 export default App;
