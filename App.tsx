@@ -12,9 +12,10 @@ import React from 'react';
 
 import OnboardingScreen from './src/components/screens/OnboardingScreen';
 import WriteScreen from './src/components/screens/WriteScreen';
+import PrioritizeScreen from './src/components/screens/PrioritizeScreen';
 
 const App = () => {
-  return <WriteScreen />;
+  return <PrioritizeScreen />;
 };
 
 export default App;

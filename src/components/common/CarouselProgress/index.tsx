@@ -14,6 +14,7 @@ const CarousselProgress = ({
       {Array.from(Array(dotCount)).map((item, index) => {
         return (
           <View
+            key={index}
             style={[
               styles.dotBase,
               index === progress ? styles.dotSelected : styles.dotUnselected,

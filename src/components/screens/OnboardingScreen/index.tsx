@@ -83,13 +83,18 @@ const OnboardingScreen = () => {
             <PrimaryButton onPress={() => {}} label="get started" />
           </View>
         </ScrollView>
-        <CarousselProgress progress={progress} dotCount={4} />
+        <View style={styles.progressContainer}>
+          <CarousselProgress progress={progress} dotCount={4} />
+        </View>
       </SafeAreaView>
     </Fragment>
   );
 };
 
 const styles = StyleSheet.create({
+  progressContainer: {
+    paddingBottom: 10,
+  },
   scrollView: {
     flex: 1,
     alignSelf: 'stretch',
