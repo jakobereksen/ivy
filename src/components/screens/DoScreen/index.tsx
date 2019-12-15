@@ -5,15 +5,23 @@ import {
   View,
   Text,
   Animated,
-  Alert,
   Image,
+  Easing,
 } from 'react-native';
 import colors from '../../../colors';
 import PrimaryButton from '../../common/PrimaryButton';
 import Checkmark from './assets/checkmark.png';
 import {TouchableOpacity} from 'react-native-gesture-handler';
+import {NavigationStackScreenProps} from 'react-navigation-stack';
+import {useSelector} from 'react-redux/lib/hooks/useSelector';
+import {useDispatch} from 'react-redux/lib/hooks/useDispatch';
+import {AppState} from '../../../logic/model';
+import {toggleTaskStateAction} from '../../../logic/actions';
 
-const DoScreen = () => {
+const DoScreen = ({navigation}: NavigationStackScreenProps) => {
+  const tasks = useSelector((state: AppState) => state.tasks);
+  const dispatch = useDispatch();
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -21,19 +29,47 @@ const DoScreen = () => {
       </View>
 
       <View style={styles.listContainer}>
-        <ListItem state={TaskState.Done} label="done" />
+        {tasks.map((task, index) => {
+          let state = TaskState.ToDo;
 
-        <ListItem state={TaskState.Done} label="upnext" />
+          if (task.isDone) {
+            state = TaskState.Done;
+          }
+          let nextUpIndex = 0;
+          for (let index = 0; index < tasks.length; index++) {
+            const element = tasks[index];
+            if (!element.isDone) {
+              nextUpIndex = index;
+              break;
+            }
+            nextUpIndex = -1;
+          }
 
-        <ListItem state={TaskState.UpNext} label="todo" />
+          if (nextUpIndex === index) {
+            state = TaskState.UpNext;
+          }
 
-        <ListItem state={TaskState.ToDo} label="todo" />
-        <ListItem state={TaskState.ToDo} label="todo" />
-        <ListItem state={TaskState.ToDo} label="todo" />
+          return (
+            <ListItem
+              state={state}
+              label={task.text}
+              key={index}
+              onPress={() => {
+                dispatch(toggleTaskStateAction({index}));
+              }}
+            />
+          );
+        })}
       </View>
 
       <View style={styles.buttonContainer}>
-        <PrimaryButton label="Plan next day" onPress={() => {}} outline />
+        <PrimaryButton
+          label="Plan next day"
+          onPress={() => {
+            navigation.navigate('write');
+          }}
+          outline={tasks.filter(item => !item.isDone).length > 0}
+        />
       </View>
     </SafeAreaView>
   );
@@ -54,9 +90,8 @@ const ListItem = ({
   label: string;
   onPress: () => void;
 }) => {
-  const [opacity] = React.useState(new Animated.Value(0));
+  const [opacity] = React.useState(new Animated.Value(0.5));
   const [checkBoxColor] = React.useState(new Animated.Value(0));
-
   const [lineWidth] = React.useState(new Animated.Value(0));
 
   React.useEffect(() => {
@@ -65,10 +100,19 @@ const ListItem = ({
         Animated.parallel([
           Animated.timing(opacity, {
             toValue: 0.5,
-            duration: 1000,
+            duration: 400,
+            easing: Easing.inOut(Easing.ease),
           }),
-          Animated.timing(checkBoxColor, {duration: 1000, toValue: 0}),
-          Animated.timing(lineWidth, {duration: 1000, toValue: 100}),
+          Animated.timing(checkBoxColor, {
+            duration: 400,
+            toValue: 0,
+            easing: Easing.inOut(Easing.ease),
+          }),
+          Animated.timing(lineWidth, {
+            duration: 600,
+            toValue: 100,
+            easing: Easing.inOut(Easing.ease),
+          }),
         ]).start();
         break;
 
@@ -76,10 +120,19 @@ const ListItem = ({
         Animated.parallel([
           Animated.timing(opacity, {
             toValue: 1,
-            duration: 1000,
+            duration: 400,
+            easing: Easing.inOut(Easing.ease),
           }),
-          Animated.timing(checkBoxColor, {duration: 1000, toValue: 1}),
-          Animated.timing(lineWidth, {duration: 1000, toValue: 0}),
+          Animated.timing(checkBoxColor, {
+            duration: 400,
+            toValue: 1,
+            easing: Easing.inOut(Easing.ease),
+          }),
+          Animated.timing(lineWidth, {
+            duration: 600,
+            toValue: 0,
+            easing: Easing.inOut(Easing.ease),
+          }),
         ]).start();
 
         break;
@@ -88,10 +141,10 @@ const ListItem = ({
         Animated.parallel([
           Animated.timing(opacity, {
             toValue: 0.5,
-            duration: 1000,
+            duration: 400,
           }),
-          Animated.timing(checkBoxColor, {duration: 1000, toValue: 0}),
-          Animated.timing(lineWidth, {duration: 1000, toValue: 0}),
+          Animated.timing(checkBoxColor, {duration: 400, toValue: 0}),
+          Animated.timing(lineWidth, {duration: 400, toValue: 0}),
         ]).start();
 
         break;

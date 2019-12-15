@@ -18,8 +18,9 @@ import Prioritize from './assets/prioritize.png';
 import Do from './assets/do.png';
 import Remind from './assets/remind.png';
 import PrimaryButton from '../../common/PrimaryButton';
+import {NavigationStackScreenProps} from 'react-navigation-stack';
 
-const OnboardingScreen = () => {
+const OnboardingScreen = ({navigation}: NavigationStackScreenProps) => {
   const [progress, setProgress] = useState(0);
 
   const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -74,13 +75,18 @@ const OnboardingScreen = () => {
           <View style={styles.swipeable}>
             <Image source={Remind} />
             <View>
-              <Text style={styles.title}>Habitualize</Text>
+              <Text style={styles.title}>Habituate</Text>
               <Text style={styles.body}>
                 Repeat this Method everyday and feel more productive. We will
                 make it easier by reminding you.
               </Text>
             </View>
-            <PrimaryButton onPress={() => {}} label="get started" />
+            <PrimaryButton
+              onPress={() => {
+                navigation.navigate('write');
+              }}
+              label="get started"
+            />
           </View>
         </ScrollView>
         <View style={styles.progressContainer}>

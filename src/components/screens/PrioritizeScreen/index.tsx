@@ -9,13 +9,21 @@ import {
   Animated,
   Dimensions,
   Alert,
+  Task,
 } from 'react-native';
 import Back from './assets/back.png';
 import colors from '../../../colors';
 import PrimaryButton from '../../common/PrimaryButton';
 import DraggableFlatList from 'react-native-draggable-flatlist';
+import {NavigationStackScreenProps} from 'react-navigation-stack';
+import {useSelector, useDispatch} from 'react-redux';
+import {AppState} from '../../../logic/model';
+import {setTasksAction} from '../../../logic/actions';
 
-const PrioritizeScreen = () => {
+const PrioritizeScreen = ({navigation}: NavigationStackScreenProps) => {
+  const tasks = useSelector((state: AppState) => state.tasks);
+  const dispatch = useDispatch();
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -28,12 +36,13 @@ const PrioritizeScreen = () => {
       <View style={styles.outerListContainer}>
         <View style={styles.listContainer}>
           <View style={styles.numberLabelContainer}>
-            <Text style={styles.numberLabel}>1</Text>
-            <Text style={styles.numberLabel}>2</Text>
-            <Text style={styles.numberLabel}>3</Text>
-            <Text style={styles.numberLabel}>4</Text>
-            <Text style={styles.numberLabel}>5</Text>
-            <Text style={styles.numberLabel}>6</Text>
+            {[...Array(6).keys()]
+              .map(x => x + 1)
+              .map(item => (
+                <Text style={styles.numberLabel} key={item}>
+                  {item}
+                </Text>
+              ))}
           </View>
 
           <View
@@ -42,30 +51,32 @@ const PrioritizeScreen = () => {
               width: 210,
             }}>
             <DraggableFlatList
-              data={[
-                'close deal',
-                'do other stuff',
-                'somethung',
-                'cook',
-                'study',
-                'somethi',
-              ]}
+              data={tasks}
               renderItem={renderItem}
-              keyExtractor={(item, index) => `draggable-item-${item}`}
-              onDragEnd={({data}) => {}}
+              keyExtractor={(item, index) => `draggable-item-${index}`}
+              onDragEnd={({data}) => {
+                dispatch(setTasksAction({tasks: data}));
+              }}
             />
           </View>
           <View style={styles.numberLabelContainer} />
         </View>
       </View>
 
-      <PrimaryButton onPress={() => {}} label="Continue" />
+      <View style={styles.buttonContainer}>
+        <PrimaryButton
+          onPress={() => {
+            navigation.navigate('do');
+          }}
+          label="Continue"
+        />
+      </View>
     </SafeAreaView>
   );
 };
 
 const renderItem = ({item, index, drag, isActive}) => {
-  return <DragItem label={item} drag={drag} isActive={isActive} />;
+  return <DragItem label={item.text} drag={drag} isActive={isActive} />;
 };
 
 const DragItem = ({
@@ -153,7 +164,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignSelf: 'stretch',
     alignItems: 'center',
-    marginBottom: 20,
   },
   listContainer: {
     flexDirection: 'row',
@@ -174,6 +184,9 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  buttonContainer: {
+    paddingBottom: 20,
   },
 });
 
