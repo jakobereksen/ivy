@@ -8,8 +8,6 @@ import {
   TouchableOpacity,
   Animated,
   Dimensions,
-  Alert,
-  Task,
 } from 'react-native';
 import Back from './assets/back.png';
 import colors from '../../../colors';
@@ -17,8 +15,31 @@ import PrimaryButton from '../../common/PrimaryButton';
 import DraggableFlatList from 'react-native-draggable-flatlist';
 import {NavigationStackScreenProps} from 'react-navigation-stack';
 import {useSelector, useDispatch} from 'react-redux';
-import {AppState} from '../../../logic/model';
-import {setTasksAction} from '../../../logic/actions';
+import {AppState, Phase} from '../../../logic/model';
+import {setTasksAction, setPhaseAction} from '../../../logic/actions';
+import PushNotification from 'react-native-push-notification';
+
+const messages = [
+  {title: 'Hey', message: `Dont't forget to plan your next day.`},
+  {title: 'We gotcha', message: `Remember planning tomorrows tasks.`},
+  {
+    title: 'Feeling good?',
+    message: `Focus that energy into planning tomorrow.`,
+  },
+];
+
+const scheduleReminder = () => {
+  var {message, title} = messages[Math.floor(Math.random() * messages.length)];
+  const today = new Date();
+  const date = new Date(today);
+  date.setDate(date.getDate() + 1);
+  date.setHours(19.5, 0, 0, 0);
+  PushNotification.localNotification({
+    title,
+    message,
+    date,
+  });
+};
 
 const PrioritizeScreen = ({navigation}: NavigationStackScreenProps) => {
   const tasks = useSelector((state: AppState) => state.tasks);
@@ -27,7 +48,11 @@ const PrioritizeScreen = ({navigation}: NavigationStackScreenProps) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButtonContainer}>
+        <TouchableOpacity
+          style={styles.backButtonContainer}
+          onPress={() => {
+            navigation.goBack();
+          }}>
           <Image source={Back} />
         </TouchableOpacity>
         <Text style={styles.title}>Prioritize</Text>
@@ -66,7 +91,9 @@ const PrioritizeScreen = ({navigation}: NavigationStackScreenProps) => {
       <View style={styles.buttonContainer}>
         <PrimaryButton
           onPress={() => {
+            dispatch(setPhaseAction({phase: Phase.do}));
             navigation.navigate('do');
+            scheduleReminder();
           }}
           label="Continue"
         />

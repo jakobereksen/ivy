@@ -8,14 +8,55 @@
  * @format
  */
 import * as React from 'react';
-import {createStackNavigator} from 'react-navigation-stack';
+import {
+  createStackNavigator,
+  NavigationStackScreenProps,
+} from 'react-navigation-stack';
 import OnboardingScreen from './src/components/screens/OnboardingScreen';
 import WriteScreen from './src/components/screens/WriteScreen';
 import PrioritizeScreen from './src/components/screens/PrioritizeScreen';
 import DoScreen from './src/components/screens/DoScreen';
 import {Provider} from 'react-redux';
-import store from './src/logic';
-import {createAppContainer} from 'react-navigation';
+import configureStore from './src/logic';
+import {createAppContainer, createSwitchNavigator} from 'react-navigation';
+import {PersistGate} from 'redux-persist/integration/react';
+import {StyleSheet, View} from 'react-native';
+import colors from './src/colors';
+import {useSelector} from 'react-redux/lib/hooks/useSelector';
+import {AppState, Phase} from './src/logic/model';
+
+const {store, persistor} = configureStore();
+
+const InitialScreen = ({navigation}: NavigationStackScreenProps) => {
+  const hasCompletedOnboarding = useSelector(
+    (state: AppState) => state.hasCompletedOnBoarding,
+  );
+  const phase = useSelector((state: AppState) => state.phase);
+
+  console.log(phase, hasCompletedOnboarding);
+
+  if (!hasCompletedOnboarding) {
+    navigation.navigate('onboarding');
+  } else {
+    switch (phase) {
+      case Phase.do:
+        navigation.navigate('do');
+        break;
+      case Phase.write:
+        navigation.navigate('write');
+        break;
+      case Phase.prioritize:
+        navigation.navigate('prioritize');
+        break;
+    }
+  }
+
+  return <View style={styles.view} />;
+};
+
+const styles = StyleSheet.create({
+  view: {flex: 1, alignSelf: 'stretch', backgroundColor: colors.background},
+});
 
 const AppNavigator = createStackNavigator(
   {
@@ -36,18 +77,27 @@ const AppNavigator = createStackNavigator(
     },
   },
   {
-    initialRouteName: 'prioritize',
     defaultNavigationOptions: {
       header: null,
     },
   },
 );
 
-const AppContainer = createAppContainer(AppNavigator);
+const RootNavigator = createSwitchNavigator({
+  initial: {
+    screen: InitialScreen,
+    navigationOptions: {gesturesEnabled: false},
+  },
+  app: AppNavigator,
+});
+
+const AppContainer = createAppContainer(RootNavigator);
 
 const App = () => (
   <Provider store={store}>
-    <AppContainer />
+    <PersistGate loading={null} persistor={persistor}>
+      <AppContainer />
+    </PersistGate>
   </Provider>
 );
 

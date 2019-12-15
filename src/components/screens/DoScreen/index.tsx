@@ -15,8 +15,12 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import {NavigationStackScreenProps} from 'react-navigation-stack';
 import {useSelector} from 'react-redux/lib/hooks/useSelector';
 import {useDispatch} from 'react-redux/lib/hooks/useDispatch';
-import {AppState} from '../../../logic/model';
-import {toggleTaskStateAction} from '../../../logic/actions';
+import {AppState, Phase} from '../../../logic/model';
+import {
+  toggleTaskStateAction,
+  setTasksAction,
+  setPhaseAction,
+} from '../../../logic/actions';
 
 const DoScreen = ({navigation}: NavigationStackScreenProps) => {
   const tasks = useSelector((state: AppState) => state.tasks);
@@ -66,6 +70,8 @@ const DoScreen = ({navigation}: NavigationStackScreenProps) => {
         <PrimaryButton
           label="Plan next day"
           onPress={() => {
+            dispatch(setTasksAction({tasks: [{text: '', isDone: false}]}));
+            dispatch(setPhaseAction({phase: Phase.write}));
             navigation.navigate('write');
           }}
           outline={tasks.filter(item => !item.isDone).length > 0}

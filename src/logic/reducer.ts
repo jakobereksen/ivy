@@ -1,16 +1,9 @@
-import {AppState} from './model';
-import {Alert} from 'react-native';
+import {AppState, Phase} from './model';
 
 const initialState: AppState = {
   hasCompletedOnBoarding: false,
-  tasks: [
-    {text: 'choqw', isDone: false},
-    {text: 'choqwdddd', isDone: false},
-    {text: 'choqass33w', isDone: false},
-    {text: 'choqw', isDone: false},
-    {text: 'choqwdddd', isDone: false},
-    {text: 'choqass33w', isDone: false},
-  ],
+  tasks: [{text: '', isDone: false}],
+  phase: Phase.write,
 };
 
 const reducer = (state = initialState, action): AppState => {
@@ -53,6 +46,15 @@ const reducer = (state = initialState, action): AppState => {
 
     case 'SET_TASKS':
       return {...state, tasks: action.payload.tasks};
+
+    case 'TOGGLE_HAS_COMPLETED_ONBOARDING':
+      return {...state, hasCompletedOnBoarding: !state.hasCompletedOnBoarding};
+
+    case 'SET_PHASE':
+      return {
+        ...state,
+        phase: action.payload.phase,
+      };
 
     default:
       return state;

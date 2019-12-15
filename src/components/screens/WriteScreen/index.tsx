@@ -1,4 +1,4 @@
-import React, {Fragment, useState} from 'react';
+import React, {Fragment, useState, useRef, useEffect} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -9,11 +9,44 @@ import {
   KeyboardAvoidingView,
   TouchableOpacity,
   TextInput,
+  ReturnKeyType,
+  NativeSyntheticEvent,
+  TextInputKeyPressEventData,
 } from 'react-native';
 import {AnimatedCircularProgress} from 'react-native-circular-progress';
 import colors from '../../../colors';
+import {useSelector} from 'react-redux/lib/hooks/useSelector';
+import {useDispatch} from 'react-redux/lib/hooks/useDispatch';
+import {AppState, Phase} from '../../../logic/model';
+import {
+  setTaskTextAction,
+  addTaskAction,
+  removeTaskAction,
+  setPhaseAction,
+} from '../../../logic/actions';
+import PrimaryButton from '../../common/PrimaryButton';
+import {NavigationStackScreenProps} from 'react-navigation-stack';
 
-const WriteScreen = () => {
+const WriteScreen = ({navigation}: NavigationStackScreenProps) => {
+  const tasks = useSelector((state: AppState) => state.tasks);
+  const dispatch = useDispatch();
+
+  const refContainers = [...Array(6)].map(() => useRef(null));
+  const scrollViewRefContainer = useRef(null);
+
+  const canContinue = tasks.length === 6 && tasks[5].text !== '';
+
+  useEffect(() => {
+    if (canContinue) {
+      scrollViewRefContainer.current.scrollToEnd();
+    }
+  }, [canContinue]);
+
+  const goToNextPhase = () => {
+    dispatch(setPhaseAction({phase: Phase.prioritize}));
+    navigation.navigate('prioritize');
+  };
+
   return (
     <Fragment>
       <StatusBar barStyle="dark-content" />
@@ -27,7 +60,7 @@ const WriteScreen = () => {
               <AnimatedCircularProgress
                 size={50}
                 width={4}
-                fill={30}
+                fill={(100 / 6) * tasks.filter(task => task.text !== '').length}
                 lineCap="round"
                 tintColor={colors.primary}
                 backgroundColor={colors.background}>
@@ -42,12 +75,67 @@ const WriteScreen = () => {
 
           <ScrollView
             style={styles.scrollView}
-            contentContainerStyle={styles.scrollViewContentContainer}>
-            <TaskInput value={'qwe'} />
-            <TaskInput value={'qwe'} />
-            <TaskInput value={'qwe'} />
-            <AddTaskButton onPress={() => {}} />
+            contentContainerStyle={styles.scrollViewContentContainer}
+            ref={scrollViewRefContainer}
+            keyboardShouldPersistTaps="handled">
+            {tasks.map((task, index) => {
+              return (
+                <TaskInput
+                  key={index}
+                  onChangeText={text => {
+                    dispatch(setTaskTextAction({text, index}));
+                  }}
+                  value={task.text}
+                  textInputRef={refContainers[index]}
+                  returnKeyType={index === 5 ? 'done' : 'next'}
+                  onSubmitEditing={() => {
+                    if (
+                      refContainers[index + 1] &&
+                      refContainers[index + 1].current
+                    ) {
+                      refContainers[index + 1].current.focus();
+                    } else if (index < 5) {
+                      dispatch(
+                        addTaskAction({task: {text: '', isDone: false}}),
+                      );
+                    } else if (
+                      tasks.filter(task => task.text === '').length === 0
+                    ) {
+                      goToNextPhase();
+                    }
+                  }}
+                  onKeyPress={event => {
+                    if (
+                      event.nativeEvent.key === 'Backspace' &&
+                      task.text === '' &&
+                      index > 0
+                    ) {
+                      dispatch(removeTaskAction({index}));
+                      refContainers[index - 1].current.focus();
+                    }
+                  }}
+                />
+              );
+            })}
+            {tasks.length < 6 ? (
+              <AddTaskButton
+                onPress={() => {
+                  dispatch(addTaskAction({task: {text: '', isDone: false}}));
+                }}
+              />
+            ) : null}
           </ScrollView>
+          {tasks.length === 6 &&
+          tasks.filter(task => task.text === '').length === 0 ? (
+            <View style={styles.nextButtonContainer}>
+              <PrimaryButton
+                label="Next"
+                onPress={() => {
+                  goToNextPhase();
+                }}
+              />
+            </View>
+          ) : null}
         </SafeAreaView>
       </KeyboardAvoidingView>
     </Fragment>
@@ -63,9 +151,17 @@ const AddTaskButton = ({onPress}: {onPress: () => void}) => (
 const TaskInput = ({
   onChangeText,
   value,
+  textInputRef,
+  onSubmitEditing,
+  returnKeyType,
+  onKeyPress,
 }: {
   onChangeText?: (text: string) => void;
   value: string;
+  textInputRef: any;
+  onSubmitEditing: () => void;
+  returnKeyType: ReturnKeyType;
+  onKeyPress?: (e: NativeSyntheticEvent<TextInputKeyPressEventData>) => void;
 }) => (
   <View style={styles.taskInputContainer}>
     <View style={styles.dot} />
@@ -73,12 +169,23 @@ const TaskInput = ({
       onChangeText={onChangeText}
       value={value}
       style={styles.taskInputText}
+      numberOfLines={1}
+      placeholder="enter Task"
+      ref={textInputRef}
+      onSubmitEditing={onSubmitEditing}
+      returnKeyType={returnKeyType}
+      autoFocus
+      onKeyPress={onKeyPress}
     />
     <View style={{width: 10}} />
   </View>
 );
 
 const styles = StyleSheet.create({
+  nextButtonContainer: {
+    paddingBottom: 20,
+    paddingTop: 20,
+  },
   scrollView: {
     alignSelf: 'stretch',
     flex: 1,

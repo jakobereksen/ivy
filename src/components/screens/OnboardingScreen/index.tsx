@@ -19,9 +19,13 @@ import Do from './assets/do.png';
 import Remind from './assets/remind.png';
 import PrimaryButton from '../../common/PrimaryButton';
 import {NavigationStackScreenProps} from 'react-navigation-stack';
+import {toggleHasCompletedOnboardingAction} from '../../../logic/actions';
+import {useDispatch} from 'react-redux/lib/hooks/useDispatch';
+import {useSelector} from 'react-redux/lib/hooks/useSelector';
 
 const OnboardingScreen = ({navigation}: NavigationStackScreenProps) => {
   const [progress, setProgress] = useState(0);
+  const dispatch = useDispatch();
 
   const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const progress = Math.round(
@@ -84,6 +88,7 @@ const OnboardingScreen = ({navigation}: NavigationStackScreenProps) => {
             <PrimaryButton
               onPress={() => {
                 navigation.navigate('write');
+                dispatch(toggleHasCompletedOnboardingAction());
               }}
               label="get started"
             />
