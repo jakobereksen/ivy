@@ -5,4 +5,5 @@ export default {
   inactiveLight: '#EEEEEE',
   inactiveDark: '#D8D8D8',
   textDark: 'black',
+  textLight: 'gray',
 };

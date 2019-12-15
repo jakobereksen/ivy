@@ -35,20 +35,7 @@ target 'ivy' do
 
   pod 'RNCPushNotificationIOS', :path => '../node_modules/@react-native-community/push-notification-ios'
 
-  target 'ivyTests' do
-    inherit! :search_paths
-    # Pods for testing
-  end
+
 
   use_native_modules!
-end
-
-target 'ivy-tvOS' do
-  # Pods for ivy-tvOS
-
-  target 'ivy-tvOSTests' do
-    inherit! :search_paths
-    # Pods for testing
-  end
-
 end

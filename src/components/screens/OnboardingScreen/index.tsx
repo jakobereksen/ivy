@@ -10,7 +10,6 @@ import {
   Dimensions,
   NativeSyntheticEvent,
   NativeScrollEvent,
-  PushNotificationIOS,
 } from 'react-native';
 import CarousselProgress from '../../common/CarouselProgress';
 
@@ -22,7 +21,8 @@ import PrimaryButton from '../../common/PrimaryButton';
 import {NavigationStackScreenProps} from 'react-navigation-stack';
 import {toggleHasCompletedOnboardingAction} from '../../../logic/actions';
 import {useDispatch} from 'react-redux/lib/hooks/useDispatch';
-import {useSelector} from 'react-redux/lib/hooks/useSelector';
+
+import PushNotificationIOS from '@react-native-community/push-notification-ios';
 
 const OnboardingScreen = ({navigation}: NavigationStackScreenProps) => {
   const [progress, setProgress] = useState(0);

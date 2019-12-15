@@ -176,6 +176,7 @@ const TaskInput = ({
       returnKeyType={returnKeyType}
       autoFocus
       onKeyPress={onKeyPress}
+      placeholderTextColor={colors.textLight}
     />
     <View style={{width: 10}} />
   </View>
