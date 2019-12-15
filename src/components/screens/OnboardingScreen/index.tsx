@@ -10,6 +10,7 @@ import {
   Dimensions,
   NativeSyntheticEvent,
   NativeScrollEvent,
+  PushNotificationIOS,
 } from 'react-native';
 import CarousselProgress from '../../common/CarouselProgress';
 
@@ -89,6 +90,7 @@ const OnboardingScreen = ({navigation}: NavigationStackScreenProps) => {
               onPress={() => {
                 navigation.navigate('write');
                 dispatch(toggleHasCompletedOnboardingAction());
+                PushNotificationIOS.requestPermissions();
               }}
               label="get started"
             />

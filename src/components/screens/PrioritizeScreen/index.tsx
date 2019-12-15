@@ -34,7 +34,7 @@ const scheduleReminder = () => {
   const date = new Date(today);
   date.setDate(date.getDate() + 1);
   date.setHours(19.5, 0, 0, 0);
-  PushNotification.localNotification({
+  PushNotification.localNotificationSchedule({
     title,
     message,
     date,
