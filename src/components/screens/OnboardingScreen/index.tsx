@@ -82,7 +82,7 @@ const OnboardingScreen = ({navigation}: NavigationStackScreenProps) => {
             <View>
               <Text style={styles.title}>Habituate</Text>
               <Text style={styles.body}>
-                Repeat this Method everyday and feel more productive. We will
+                Repeat this method everyday and feel more productive. We will
                 make it easier by reminding you.
               </Text>
             </View>
@@ -92,7 +92,7 @@ const OnboardingScreen = ({navigation}: NavigationStackScreenProps) => {
                 dispatch(toggleHasCompletedOnboardingAction());
                 PushNotificationIOS.requestPermissions();
               }}
-              label="get started"
+              label="Get started"
             />
           </View>
         </ScrollView>

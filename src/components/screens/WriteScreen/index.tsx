@@ -81,7 +81,7 @@ const WriteScreen = ({navigation}: NavigationStackScreenProps) => {
             {tasks.map((task, index) => {
               return (
                 <TaskInput
-                  key={index}
+                  key={task.key}
                   onChangeText={text => {
                     dispatch(setTaskTextAction({text, index}));
                   }}

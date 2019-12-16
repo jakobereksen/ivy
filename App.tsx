@@ -33,8 +33,6 @@ const InitialScreen = ({navigation}: NavigationStackScreenProps) => {
   );
   const phase = useSelector((state: AppState) => state.phase);
 
-  console.log(phase, hasCompletedOnboarding);
-
   if (!hasCompletedOnboarding) {
     navigation.navigate('onboarding');
   } else {
@@ -46,7 +44,7 @@ const InitialScreen = ({navigation}: NavigationStackScreenProps) => {
         navigation.navigate('write');
         break;
       case Phase.prioritize:
-        navigation.navigate('prioritize');
+        navigation.navigate('write');
         break;
     }
   }

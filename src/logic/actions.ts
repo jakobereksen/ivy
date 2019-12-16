@@ -1,4 +1,4 @@
-import {Task, Phase} from './model';
+import {Task, Phase, TaskWithKey} from './model';
 
 export const addTaskAction = (payload: {task: Task}) => ({
   type: 'ADD_TASK',
@@ -27,7 +27,7 @@ export const toggleTaskStateAction = (payload: {index: number}) => ({
   payload,
 });
 
-export const setTasksAction = (payload: {tasks: Task[]}) => ({
+export const setTasksAction = (payload: {tasks: TaskWithKey[]}) => ({
   type: 'SET_TASKS',
   payload,
 });

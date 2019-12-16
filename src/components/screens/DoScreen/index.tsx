@@ -7,6 +7,7 @@ import {
   Animated,
   Image,
   Easing,
+  Alert,
 } from 'react-native';
 import colors from '../../../colors';
 import PrimaryButton from '../../common/PrimaryButton';
@@ -25,6 +26,8 @@ import {
 const DoScreen = ({navigation}: NavigationStackScreenProps) => {
   const tasks = useSelector((state: AppState) => state.tasks);
   const dispatch = useDispatch();
+
+  const hasCompletedAllTasks = tasks.filter(item => !item.isDone).length === 0;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -70,11 +73,40 @@ const DoScreen = ({navigation}: NavigationStackScreenProps) => {
         <PrimaryButton
           label="Plan next day"
           onPress={() => {
-            dispatch(setTasksAction({tasks: [{text: '', isDone: false}]}));
-            dispatch(setPhaseAction({phase: Phase.write}));
-            navigation.navigate('write');
+            const goToNextScreen = () => {
+              const remainingTasks = tasks.filter(task => !task.isDone);
+
+              if (remainingTasks.length === 0) {
+                remainingTasks.push({text: '', isDone: false, key: 0});
+              }
+
+              dispatch(setTasksAction({tasks: remainingTasks}));
+              dispatch(setPhaseAction({phase: Phase.write}));
+              navigation.navigate('write');
+            };
+
+            if (!hasCompletedAllTasks) {
+              Alert.alert(
+                'Are you sure?',
+                'You have not yet completed all tasks.',
+                [
+                  {
+                    text: 'Plan next day',
+                    onPress: goToNextScreen,
+                    style: 'default',
+                  },
+                  {
+                    text: 'Cancel',
+                    style: 'cancel',
+                  },
+                ],
+                {cancelable: false},
+              );
+            } else {
+              goToNextScreen();
+            }
           }}
-          outline={tasks.filter(item => !item.isDone).length > 0}
+          outline={!hasCompletedAllTasks}
         />
       </View>
     </SafeAreaView>
@@ -116,7 +148,7 @@ const ListItem = ({
           }),
           Animated.timing(lineWidth, {
             duration: 600,
-            toValue: 100,
+            toValue: 1,
             easing: Easing.inOut(Easing.ease),
           }),
         ]).start();
@@ -148,9 +180,18 @@ const ListItem = ({
           Animated.timing(opacity, {
             toValue: 0.5,
             duration: 400,
+            easing: Easing.inOut(Easing.ease),
           }),
-          Animated.timing(checkBoxColor, {duration: 400, toValue: 0}),
-          Animated.timing(lineWidth, {duration: 400, toValue: 0}),
+          Animated.timing(checkBoxColor, {
+            duration: 400,
+            toValue: 0,
+            easing: Easing.inOut(Easing.ease),
+          }),
+          Animated.timing(lineWidth, {
+            duration: 400,
+            toValue: 0,
+            easing: Easing.inOut(Easing.ease),
+          }),
         ]).start();
 
         break;
@@ -166,13 +207,23 @@ const ListItem = ({
             justifyContent: 'space-between',
             alignItems: 'center',
             height: 50,
+            width: 240,
           },
           {opacity},
         ]}>
-        <View style={{alignItems: 'center', justifyContent: 'center'}}>
+        <View style={{width: 25}} />
+        <View
+          style={{
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}>
           <Text
+            numberOfLines={1}
             style={{
-              width: 210,
+              paddingLeft: 10,
+              paddingRight: 10,
+              maxWidth: 170,
+              width: '100%',
               fontFamily:
                 state === TaskState.UpNext
                   ? 'OpenSans-SemiBold'
@@ -183,19 +234,22 @@ const ListItem = ({
             }}>
             {label}
           </Text>
-
-          <View style={{width: 25}} />
-
           <Animated.View
             style={[
               {
                 height: 2,
                 backgroundColor: colors.textDark,
+                opacity: 0.7,
                 borderRadius: 1,
                 position: 'absolute',
                 top: 14,
               },
-              {width: lineWidth},
+              {
+                width: lineWidth.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: ['0%', '100%'],
+                }),
+              },
             ]}
           />
         </View>

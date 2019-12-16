@@ -51,7 +51,7 @@ const PrioritizeScreen = ({navigation}: NavigationStackScreenProps) => {
         <TouchableOpacity
           style={styles.backButtonContainer}
           onPress={() => {
-            navigation.goBack();
+            navigation.goBack(null);
           }}>
           <Image source={Back} />
         </TouchableOpacity>
@@ -78,7 +78,7 @@ const PrioritizeScreen = ({navigation}: NavigationStackScreenProps) => {
             <DraggableFlatList
               data={tasks}
               renderItem={renderItem}
-              keyExtractor={(item, index) => `draggable-item-${index}`}
+              keyExtractor={item => 'some-key-' + item.key}
               onDragEnd={({data}) => {
                 dispatch(setTasksAction({tasks: data}));
               }}
@@ -141,7 +141,9 @@ const DragItem = ({
   return (
     <TouchableOpacity onPressIn={drag} activeOpacity={1}>
       <Animated.View style={[styles.dragItem, {opacity, transform: [{scale}]}]}>
-        <Text style={styles.dragItemLabel}>{label}</Text>
+        <Text style={styles.dragItemLabel} numberOfLines={1}>
+          {label}
+        </Text>
         <View style={styles.dragIndicator} />
       </Animated.View>
     </TouchableOpacity>
@@ -165,6 +167,8 @@ const styles = StyleSheet.create({
     fontFamily: 'OpenSans-Regular',
     fontSize: 18,
     color: '#737373',
+    maxWidth: 150,
+    width: '100%',
   },
   dragIndicator: {
     width: 18,

@@ -1,7 +1,7 @@
 export interface AppState {
   hasCompletedOnBoarding: boolean;
   phase: Phase;
-  tasks: Task[];
+  tasks: TaskWithKey[];
 }
 
 export enum Phase {
@@ -9,6 +9,12 @@ export enum Phase {
   prioritize = 'PRIORITIZE',
   do = 'DO',
 }
+export interface TaskWithKey {
+  text: string;
+  isDone: boolean;
+  key: number;
+}
+
 export interface Task {
   text: string;
   isDone: boolean;

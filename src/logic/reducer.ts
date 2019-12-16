@@ -1,8 +1,8 @@
-import {AppState, Phase} from './model';
+import {AppState, Phase, TaskWithKey} from './model';
 
 const initialState: AppState = {
   hasCompletedOnBoarding: false,
-  tasks: [{text: '', isDone: false}],
+  tasks: [{text: '', isDone: false, key: 0}],
   phase: Phase.write,
 };
 
@@ -15,7 +15,13 @@ const reducer = (state = initialState, action): AppState => {
       return {...state, tasks};
 
     case 'ADD_TASK':
-      return {...state, tasks: [...state.tasks, action.payload.task]};
+      const nextTask: TaskWithKey = action.payload.task;
+      let key = 0;
+      while (state.tasks.filter(task => task.key === key).length > 0) {
+        key++;
+      }
+      nextTask.key = key;
+      return {...state, tasks: [...state.tasks, nextTask]};
 
     case 'SET_TASK_TEXT':
       const newTasks2 = [...state.tasks];
