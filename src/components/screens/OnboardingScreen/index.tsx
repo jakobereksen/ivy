@@ -53,7 +53,8 @@ const OnboardingScreen = ({navigation}: NavigationStackScreenProps) => {
             <View>
               <Text style={styles.title}>Plan</Text>
               <Text style={styles.body}>
-                Write down the six most important task for your next day.
+                Get more productive by applying the Ivy Lee Method. Begin by
+                writing down the six most important task for your next day.
               </Text>
             </View>
           </View>
@@ -130,7 +131,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     paddingTop: 20,
     textAlign: 'center',
-    lineHeight: 36,
+    lineHeight: 32,
   },
 });
 
