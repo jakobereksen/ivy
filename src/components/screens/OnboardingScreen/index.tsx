@@ -5,7 +5,6 @@ import {
   ScrollView,
   View,
   Text,
-  StatusBar,
   Image,
   Dimensions,
   NativeSyntheticEvent,
@@ -38,7 +37,6 @@ const OnboardingScreen = ({navigation}: NavigationStackScreenProps) => {
 
   return (
     <Fragment>
-      <StatusBar barStyle="dark-content" />
       <SafeAreaView style={styles.container}>
         <ScrollView
           horizontal

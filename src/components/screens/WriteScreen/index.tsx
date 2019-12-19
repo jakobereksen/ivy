@@ -5,7 +5,6 @@ import {
   ScrollView,
   View,
   Text,
-  StatusBar,
   KeyboardAvoidingView,
   TouchableOpacity,
   TextInput,
@@ -49,7 +48,6 @@ const WriteScreen = ({navigation}: NavigationStackScreenProps) => {
 
   return (
     <Fragment>
-      <StatusBar barStyle="dark-content" />
       <KeyboardAvoidingView behavior="padding" style={styles.container}>
         <SafeAreaView style={styles.container}>
           <View style={styles.header}>
