@@ -85,6 +85,9 @@ const DoScreen = ({navigation}: NavigationStackScreenProps) => {
             label="Plan next day"
             onPress={() => {
               const goToNextScreen = () => {
+                if (hasCompletedAllTasks && confettiRef.current) {
+                  confettiRef.current.stopConfetti();
+                }
                 const remainingTasks = tasks.filter(task => !task.isDone);
 
                 if (remainingTasks.length === 0) {
@@ -121,7 +124,13 @@ const DoScreen = ({navigation}: NavigationStackScreenProps) => {
           />
         </View>
       </SafeAreaView>
-      <Confetti ref={confettiRef} duration={2000} size={1.5} confettiCount={120} timeout={5} />
+      <Confetti
+        ref={confettiRef}
+        duration={2000}
+        size={1.5}
+        confettiCount={120}
+        timeout={5}
+      />
     </>
   );
 };

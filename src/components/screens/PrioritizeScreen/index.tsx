@@ -78,6 +78,7 @@ const PrioritizeScreen = ({navigation}: NavigationStackScreenProps) => {
               width: 210,
             }}>
             <DraggableFlatList
+              scrollEnabled={false}
               data={tasks}
               renderItem={renderItem}
               keyExtractor={item => 'some-key-' + item.key}
