@@ -8,14 +8,16 @@ import {
   Image,
   Easing,
   Alert,
+  TouchableOpacity,
 } from 'react-native';
 import colors from '../../../colors';
 import PrimaryButton from '../../common/PrimaryButton';
 import Checkmark from './assets/checkmark.png';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import {NavigationStackScreenProps} from 'react-navigation-stack';
 import {useSelector} from 'react-redux/lib/hooks/useSelector';
 import {useDispatch} from 'react-redux/lib/hooks/useDispatch';
+import Confetti from 'react-native-confetti';
 import {AppState, Phase} from '../../../logic/model';
 import {
   toggleTaskStateAction,
@@ -26,90 +28,101 @@ import {
 const DoScreen = ({navigation}: NavigationStackScreenProps) => {
   const tasks = useSelector((state: AppState) => state.tasks);
   const dispatch = useDispatch();
+  const confettiRef = React.useRef(null);
 
   const hasCompletedAllTasks = tasks.filter(item => !item.isDone).length === 0;
 
+  if (hasCompletedAllTasks && confettiRef.current) {
+    confettiRef.current.startConfetti();
+  } else if (confettiRef.current) {
+    confettiRef.current.stopConfetti();
+  }
+
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Get things done</Text>
-      </View>
+    <>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Get things done</Text>
+        </View>
 
-      <View style={styles.listContainer}>
-        {tasks.map((task, index) => {
-          let state = TaskState.ToDo;
+        <View style={styles.listContainer}>
+          {tasks.map((task, index) => {
+            let state = TaskState.ToDo;
 
-          if (task.isDone) {
-            state = TaskState.Done;
-          }
-          let nextUpIndex = 0;
-          for (let index = 0; index < tasks.length; index++) {
-            const element = tasks[index];
-            if (!element.isDone) {
-              nextUpIndex = index;
-              break;
+            if (task.isDone) {
+              state = TaskState.Done;
             }
-            nextUpIndex = -1;
-          }
-
-          if (nextUpIndex === index) {
-            state = TaskState.UpNext;
-          }
-
-          return (
-            <ListItem
-              state={state}
-              label={task.text}
-              key={index}
-              onPress={() => {
-                dispatch(toggleTaskStateAction({index}));
-              }}
-            />
-          );
-        })}
-      </View>
-
-      <View style={styles.buttonContainer}>
-        <PrimaryButton
-          label="Plan next day"
-          onPress={() => {
-            const goToNextScreen = () => {
-              const remainingTasks = tasks.filter(task => !task.isDone);
-
-              if (remainingTasks.length === 0) {
-                remainingTasks.push({text: '', isDone: false, key: 0});
+            let nextUpIndex = 0;
+            for (let index = 0; index < tasks.length; index++) {
+              const element = tasks[index];
+              if (!element.isDone) {
+                nextUpIndex = index;
+                break;
               }
-
-              dispatch(setTasksAction({tasks: remainingTasks}));
-              dispatch(setPhaseAction({phase: Phase.write}));
-              navigation.navigate('write');
-            };
-
-            if (!hasCompletedAllTasks) {
-              Alert.alert(
-                'Are you sure?',
-                'You have not yet completed all tasks.',
-                [
-                  {
-                    text: 'Plan next day',
-                    onPress: goToNextScreen,
-                    style: 'default',
-                  },
-                  {
-                    text: 'Cancel',
-                    style: 'cancel',
-                  },
-                ],
-                {cancelable: false},
-              );
-            } else {
-              goToNextScreen();
+              nextUpIndex = -1;
             }
-          }}
-          outline={!hasCompletedAllTasks}
-        />
-      </View>
-    </SafeAreaView>
+
+            if (nextUpIndex === index) {
+              state = TaskState.UpNext;
+            }
+
+            return (
+              <ListItem
+                state={state}
+                label={task.text}
+                key={index}
+                onPress={() => {
+                  ReactNativeHapticFeedback.trigger('selection');
+                  dispatch(toggleTaskStateAction({index}));
+                }}
+              />
+            );
+          })}
+        </View>
+
+        <View style={styles.buttonContainer}>
+          <PrimaryButton
+            label="Plan next day"
+            onPress={() => {
+              const goToNextScreen = () => {
+                const remainingTasks = tasks.filter(task => !task.isDone);
+
+                if (remainingTasks.length === 0) {
+                  remainingTasks.push({text: '', isDone: false, key: 0});
+                }
+
+                dispatch(setTasksAction({tasks: remainingTasks}));
+                dispatch(setPhaseAction({phase: Phase.write}));
+                navigation.navigate('write');
+              };
+
+              if (!hasCompletedAllTasks) {
+                Alert.alert(
+                  'Are you sure?',
+                  'You have not yet completed all tasks.',
+                  [
+                    {
+                      text: 'Plan next day',
+                      onPress: goToNextScreen,
+                      style: 'default',
+                    },
+                    {
+                      text: 'Cancel',
+                      style: 'cancel',
+                    },
+                  ],
+                  {cancelable: false},
+                );
+              } else {
+                goToNextScreen();
+              }
+            }}
+            outline={!hasCompletedAllTasks}
+          />
+        </View>
+      </SafeAreaView>
+      <Confetti ref={confettiRef} duration={2000} size={1.5} confettiCount={120} timeout={5} />
+    </>
   );
 };
 
@@ -137,17 +150,17 @@ const ListItem = ({
       case TaskState.Done:
         Animated.parallel([
           Animated.timing(opacity, {
-            toValue: 0.5,
-            duration: 400,
+            toValue: 0.3,
+            duration: 300,
             easing: Easing.inOut(Easing.ease),
           }),
           Animated.timing(checkBoxColor, {
-            duration: 400,
+            duration: 300,
             toValue: 0,
             easing: Easing.inOut(Easing.ease),
           }),
           Animated.timing(lineWidth, {
-            duration: 600,
+            duration: 350,
             toValue: 1,
             easing: Easing.inOut(Easing.ease),
           }),
@@ -158,16 +171,16 @@ const ListItem = ({
         Animated.parallel([
           Animated.timing(opacity, {
             toValue: 1,
-            duration: 400,
+            duration: 300,
             easing: Easing.inOut(Easing.ease),
           }),
           Animated.timing(checkBoxColor, {
-            duration: 400,
+            duration: 300,
             toValue: 1,
             easing: Easing.inOut(Easing.ease),
           }),
           Animated.timing(lineWidth, {
-            duration: 600,
+            duration: 350,
             toValue: 0,
             easing: Easing.inOut(Easing.ease),
           }),
@@ -178,17 +191,17 @@ const ListItem = ({
       case TaskState.ToDo:
         Animated.parallel([
           Animated.timing(opacity, {
-            toValue: 0.5,
-            duration: 400,
+            toValue: 0.3,
+            duration: 300,
             easing: Easing.inOut(Easing.ease),
           }),
           Animated.timing(checkBoxColor, {
-            duration: 400,
+            duration: 300,
             toValue: 0,
             easing: Easing.inOut(Easing.ease),
           }),
           Animated.timing(lineWidth, {
-            duration: 400,
+            duration: 350,
             toValue: 0,
             easing: Easing.inOut(Easing.ease),
           }),
