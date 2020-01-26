@@ -20,7 +20,7 @@ import {Provider} from 'react-redux';
 import configureStore from './src/logic';
 import {createAppContainer, createSwitchNavigator} from 'react-navigation';
 import {PersistGate} from 'redux-persist/integration/react';
-import {StyleSheet, View} from 'react-native';
+import {StyleSheet, View, StatusBar} from 'react-native';
 import colors from './src/colors';
 import {useSelector} from 'react-redux/lib/hooks/useSelector';
 import {AppState, Phase} from './src/logic/model';
@@ -94,7 +94,10 @@ const AppContainer = createAppContainer(RootNavigator);
 const App = () => (
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
-      <AppContainer />
+      <>
+        <StatusBar barStyle="dark-content" />
+        <AppContainer />
+      </>
     </PersistGate>
   </Provider>
 );
